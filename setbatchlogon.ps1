@@ -49,7 +49,7 @@ function SetSeBatchLogon {
     #Export the USER_RIGHTS area of the local security policy
     #https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh875542(v=ws.11)
     $u_secpolitem = "SeBatchLogonRight"
-    (secedit.exe /export /cfg $ENV:TMP\secpol.inf /areas USER_RIGHTS) /quiet
+    secedit.exe /export /cfg $ENV:TMP\secpol.inf /areas USER_RIGHTS) /quiet
     
     #Declare the SID of the AD user or MSA that we want to add to the security policy
     try {
@@ -104,8 +104,8 @@ Revision=1
     #Did we explicitly declare that we want to live-update our local security policy?  Otherwise, this is just test
     if($LIVE){
         try {
-            secedit.exe /import /db $ENV:TMP\batchlogon.sdb /cfg $ENV:TMP\batchlogon.inf
-            secedit.exe /configure /db $ENV:TMP\batchlogon.sdb
+            secedit.exe /import /db $ENV:TMP\batchlogon.sdb /cfg $ENV:TMP\batchlogon.inf /quiet
+            secedit.exe /configure /db $ENV:TMP\batchlogon.sdb /quiet
         }
         catch {
             throw $_
@@ -123,7 +123,7 @@ Revision=1
         Write-Host -ForegroundColor Green "Success.  Our new Security Policy looks like.."
         
         #Confirm the new settings
-        secedit.exe /export /cfg $ENV:TMP\secpol2.inf /areas USER_RIGHTS
+        secedit.exe /export /cfg $ENV:TMP\secpol2.inf /areas USER_RIGHTS /quiet
         Get-Content $ENV:TMP\secpol2.inf
         #And cleanup after ourselves..
         Remove-Item "$ENV:TMP\secpol2.inf"
